@@ -3,12 +3,41 @@
 
 <h3>To-Do Application</h3>
 
-<input placeholder="Enter a new task" />
-<button>Add task</button>
+<input @bind="newTaskDescription" placeholder="Enter a new task" />
+<button @onclick="AddTask">Add task</button>
 
 <ul>
+    @foreach (var task in tasks)
+    {
         <li>
-            <input type="checkbox" />
-            <button>Delete</button>
+            <input type="checkbox" @bind="task.IsCompleted" />
+            @task.Description
+            <button @onclick="() => RemoveTask()">Delete</button>
         </li>
+    }
 </ul>
+
+@code {
+    private string? newTaskDescription;
+    private List<TaskItem> tasks = new();
+
+    private void AddTask()
+    {
+        if (!string.IsNullOrWhiteSpace(newTaskDescription))
+        {
+            tasks.Add(new TaskItem { Description = newTaskDescription });
+            newTaskDescription = string.Empty;
+        }
+    }
+
+    private void RemoveTask(TaskItem task)
+    {
+        tasks.Remove(task);
+    }
+
+    public class TaskItem
+    {
+        public string? Description { get; set; }
+        public bool IsCompleted { get; set; }
+    }
+}
