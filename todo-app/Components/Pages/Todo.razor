@@ -12,7 +12,7 @@
         <li>
             <input type="checkbox" @bind="task.IsCompleted" />
             @task.Description
-            <button @onclick="() => RemoveTask()">Delete</button>
+            <button @onclick="() => RemoveTask(task)">Delete</button>
         </li>
     }
 </ul>
