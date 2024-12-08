@@ -1,4 +1,5 @@
 @page "/todo"
+@rendermode InteractiveServer
 @using Models;
 @using Microsoft.EntityFrameworkCore;
 @inject AppDbContext DbContext
@@ -25,28 +26,20 @@
 
     protected override async Task OnInitializedAsync()
     {
-        Console.WriteLine("OnInitializedAsync called");
         tasks = await DbContext.Tasks.ToListAsync();
-        Console.WriteLine($"Loaded {tasks.Count} tasks");
     }
 
     private async Task AddTask()
     {
-        Console.WriteLine("AddTask called");
         if (!string.IsNullOrWhiteSpace(newTaskDescription))
         {
-            Console.WriteLine($"Adding task: {newTaskDescription}");
             var newTask = new TaskItem { Description = newTaskDescription };
             DbContext.Tasks.Add(newTask);
             await DbContext.SaveChangesAsync();
 
             tasks.Add(newTask);
             newTaskDescription = string.Empty;
-            StateHasChanged(); // Ensure the component state is updated
-        }
-        else
-        {
-            Console.WriteLine("newTaskDescription is null or whitespace");
+            StateHasChanged(); 
         }
     }
 
@@ -56,13 +49,13 @@
         await DbContext.SaveChangesAsync();
 
         tasks.Remove(task);
-        StateHasChanged(); // Ensure the component state is updated
+        StateHasChanged(); 
     }
 
     private async Task UpdateTask(TaskItem task)
     {
         DbContext.Tasks.Update(task);
         await DbContext.SaveChangesAsync();
-        StateHasChanged(); // Ensure the component state is updated
+        StateHasChanged(); 
     }
 }

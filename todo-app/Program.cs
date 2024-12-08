@@ -11,7 +11,6 @@ builder.Services.AddRazorComponents()
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite("Data Source=tasks.db"));
 
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
