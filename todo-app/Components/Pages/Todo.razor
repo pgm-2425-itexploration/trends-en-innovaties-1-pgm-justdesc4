@@ -1,5 +1,7 @@
 @page "/todo"
-@rendermode InteractiveServer
+@using Models;
+@using Microsoft.EntityFrameworkCore;
+@inject AppDbContext DbContext
 
 <h3>To-Do Application</h3>
 
@@ -10,7 +12,7 @@
     @foreach (var task in tasks)
     {
         <li>
-            <input type="checkbox" @bind="task.IsCompleted" />
+            <input type="checkbox" @bind="task.IsCompleted" @onchange="() => UpdateTask(task)" />
             @task.Description
             <button @onclick="() => RemoveTask(task)">Delete</button>
         </li>
@@ -21,23 +23,35 @@
     private string? newTaskDescription;
     private List<TaskItem> tasks = new();
 
-    private void AddTask()
+    protected override async Task OnInitializedAsync()
+    {
+        tasks = await DbContext.Tasks.ToListAsync();
+    }
+
+    private async Task AddTask()
     {
         if (!string.IsNullOrWhiteSpace(newTaskDescription))
         {
-            tasks.Add(new TaskItem { Description = newTaskDescription });
+            var newTask = new TaskItem { Description = newTaskDescription };
+            DbContext.Tasks.Add(newTask);
+            await DbContext.SaveChangesAsync();
+
+            tasks.Add(newTask);
             newTaskDescription = string.Empty;
         }
     }
 
-    private void RemoveTask(TaskItem task)
+    private async Task RemoveTask(TaskItem task)
     {
+        DbContext.Tasks.Remove(task);
+        await DbContext.SaveChangesAsync();
+
         tasks.Remove(task);
     }
 
-    public class TaskItem
+    private async Task UpdateTask(TaskItem task)
     {
-        public string? Description { get; set; }
-        public bool IsCompleted { get; set; }
+        DbContext.Tasks.Update(task);
+        await DbContext.SaveChangesAsync();
     }
 }
