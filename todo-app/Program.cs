@@ -1,4 +1,5 @@
 using todo_app.Components;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,7 +8,9 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 // Register AppDbContext
-builder.Services.AddDbContext<AppDbContext>();
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlite("Data Source=tasks.db"));
+
 
 var app = builder.Build();
 
@@ -23,6 +26,8 @@ app.UseHttpsRedirection();
 
 app.UseStaticFiles();
 app.UseAntiforgery();
+
+app.UseWebSockets();
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();

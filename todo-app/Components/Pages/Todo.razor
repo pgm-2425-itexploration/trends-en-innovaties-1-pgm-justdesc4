@@ -6,13 +6,13 @@
 <h3>To-Do Application</h3>
 
 <input @bind="newTaskDescription" placeholder="Enter a new task" />
-<button @onclick="AddTask">Add task</button>
+<button @onclick="AddTask">Add Task</button>
 
 <ul>
     @foreach (var task in tasks)
     {
         <li>
-            <input type="checkbox" @bind="task.IsCompleted" @onchange="() => UpdateTask(task)" />
+            <input type="checkbox" @bind="task.IsCompleted" @bind:after="() => UpdateTask(task)" />
             @task.Description
             <button @onclick="() => RemoveTask(task)">Delete</button>
         </li>
@@ -25,19 +25,28 @@
 
     protected override async Task OnInitializedAsync()
     {
+        Console.WriteLine("OnInitializedAsync called");
         tasks = await DbContext.Tasks.ToListAsync();
+        Console.WriteLine($"Loaded {tasks.Count} tasks");
     }
 
     private async Task AddTask()
     {
+        Console.WriteLine("AddTask called");
         if (!string.IsNullOrWhiteSpace(newTaskDescription))
         {
+            Console.WriteLine($"Adding task: {newTaskDescription}");
             var newTask = new TaskItem { Description = newTaskDescription };
             DbContext.Tasks.Add(newTask);
             await DbContext.SaveChangesAsync();
 
             tasks.Add(newTask);
             newTaskDescription = string.Empty;
+            StateHasChanged(); // Ensure the component state is updated
+        }
+        else
+        {
+            Console.WriteLine("newTaskDescription is null or whitespace");
         }
     }
 
@@ -47,11 +56,13 @@
         await DbContext.SaveChangesAsync();
 
         tasks.Remove(task);
+        StateHasChanged(); // Ensure the component state is updated
     }
 
     private async Task UpdateTask(TaskItem task)
     {
         DbContext.Tasks.Update(task);
         await DbContext.SaveChangesAsync();
+        StateHasChanged(); // Ensure the component state is updated
     }
 }

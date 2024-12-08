@@ -3,10 +3,10 @@ using Models;
 
 public class AppDbContext : DbContext
 {
-    public DbSet<TaskItem> Tasks { get; set; }
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    public AppDbContext(DbContextOptions<AppDbContext> options)
+        : base(options)
     {
-        optionsBuilder.UseSqlite("Data Source=tasks.db");
     }
+
+    public DbSet<TaskItem> Tasks { get; set; } = null!;
 }
