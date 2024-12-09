@@ -1,5 +1,6 @@
 using todo_app.Components;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,9 +8,22 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-// Register AppDbContext
+// Add services for server-side Blazor
+builder.Services.AddRazorPages();
+builder.Services.AddServerSideBlazor();
+
+// Add Identity for user authentication
+builder.Services.AddDefaultIdentity<IdentityUser>()
+    .AddEntityFrameworkStores<AppDbContext>()
+    .AddDefaultTokenProviders();
+
+// Register AppDbContext for Entity Framework
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlite("Data Source=tasks.db"));
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Register AppDbContext
+ builder.Services.AddDbContext<AppDbContext>(options =>
+ options.UseSqlite("Data Source=tasks.db"));
 
 var app = builder.Build();
 
