@@ -6,15 +6,17 @@
 
 <h3>To-Do Application</h3>
 
-<input @bind="newTaskDescription" placeholder="Enter a new task" />
-<button @onclick="AddTask">Add Task</button>
+<div class="task-input">
+    <input @bind="newTaskDescription" placeholder="Enter a new task" />
+    <button @onclick="AddTask">Add Task</button>
+</div>
 
 <ul>
     @foreach (var task in tasks)
     {
         <li>
             <input type="checkbox" @bind="task.IsCompleted" @bind:after="() => UpdateTask(task)" />
-            @task.Description
+            <span>@task.Description</span>
             <button @onclick="() => RemoveTask(task)">Delete</button>
         </li>
     }
@@ -39,7 +41,7 @@
 
             tasks.Add(newTask);
             newTaskDescription = string.Empty;
-            StateHasChanged(); 
+            StateHasChanged();
         }
     }
 
@@ -49,13 +51,13 @@
         await DbContext.SaveChangesAsync();
 
         tasks.Remove(task);
-        StateHasChanged(); 
+        StateHasChanged();
     }
 
     private async Task UpdateTask(TaskItem task)
     {
         DbContext.Tasks.Update(task);
         await DbContext.SaveChangesAsync();
-        StateHasChanged(); 
+        StateHasChanged();
     }
 }
